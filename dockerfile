@@ -1,6 +1,4 @@
 FROM ubuntu
-LABEL maintainer="priordice - dado@fet.at"
-LABEL build_date="2018-01-22"
 
 RUN apt-get -y update && \
 	apt-get install -y curl && \
@@ -20,6 +18,7 @@ RUN  apt-get install -y git-core
 RUN curl https://bootstrap.pypa.io/get-pip.py | python3
 
 RUN pip3 install --upgrade multiprocess psutil jupyter pycrypto matplotlib pandas dateparser
+RUN pip3 install requests
 
 WORKDIR /usr/local/src
 
@@ -33,10 +32,11 @@ RUN git clone https://github.com/citp/BlockSci.git && \
 
 #RUN cd .. && \
 RUN	CC=gcc-7 CXX=g++-7 pip3 install -v -e /usr/local/src/BlockSci/blockscipy
-	
-ENV TINI_VERSION v0.6.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
-RUN chmod +x /usr/bin/tini
-ENTRYPOINT ["/usr/bin/tini", "--"]
-EXPOSE 8888
+
+ENV TINI_VERSION v0.18.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
 CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
+
+EXPOSE 8888
