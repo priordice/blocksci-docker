@@ -1,5 +1,6 @@
-FROM ubuntu
+FROM jupyter/scipy-notebook
 
+USER root
 RUN apt-get -y update && \
 	apt-get install -y curl && \
 	apt-get install -y software-properties-common && \
@@ -9,19 +10,22 @@ RUN apt-get -y update && \
 	apt install -y cmake libtool autoconf libboost-filesystem-dev libboost-iostreams-dev \
 	libboost-serialization-dev libboost-thread-dev libboost-test-dev  libssl-dev libjsoncpp-dev \
 	libcurl4-openssl-dev libjsoncpp-dev libjsonrpccpp-dev libsnappy-dev zlib1g-dev libbz2-dev \
-	liblz4-dev libzstd-dev libjemalloc-dev libsparsehash-dev python3-dev python3-pip && \
-    apt-get -y install gcc-6 g++-6
+	liblz4-dev libzstd-dev libjemalloc-dev libsparsehash-dev 
 
+RUN apt-get update -y && \
+    apt-get install -y gcc-7 g++-7 
 RUN  apt-get install -y git-core
 
-# RUN pip3 install --upgrade pip # commented out - broken import main!
-RUN curl https://bootstrap.pypa.io/get-pip.py | python3
+USER $NB_USER
+RUN conda install -c conda-forge multiprocess 
+RUN conda install -c conda-forge psutil
+RUN conda install -c conda-forge pycrypto  
+RUN conda install -c conda-forge requests 
+RUN conda install -c conda-forge dateparser 
+RUN conda install conda-build
 
-RUN pip3 install --upgrade multiprocess psutil jupyter pycrypto matplotlib pandas dateparser
-RUN pip3 install requests
-
+USER root
 WORKDIR /usr/local/src
-
 RUN git clone https://github.com/citp/BlockSci.git && \
     cd BlockSci && \
     mkdir release && \
@@ -30,13 +34,11 @@ RUN git clone https://github.com/citp/BlockSci.git && \
 	make && \
 	make install
 
-#RUN cd .. && \
-RUN	CC=gcc-7 CXX=g++-7 pip3 install -v -e /usr/local/src/BlockSci/blockscipy
+WORKDIR /usr/local/src/BlockSci/blockscipy/
+RUN CC=gcc-7 CXX=g++-7 python /usr/local/src/BlockSci/blockscipy/setup.py install
 
-ENV TINI_VERSION v0.18.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-ENTRYPOINT ["/tini", "--"]
+RUN fix-permissions $CONDA_DIR
+RUN fix-permissions /home/$NB_USER
+
+USER root
 CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
-
-EXPOSE 8888
