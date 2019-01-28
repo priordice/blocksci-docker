@@ -13,6 +13,6 @@ Even though there is a ready AMI for AWS, you might already have access to some 
     ```docker logs logtest```
     
 *   open http://localhost:8888 and enter token
-*    dockerfile does not mount any (persistent) local volume (yet), you'll need that for the blockparser. Just modify the dockerfile or attach into the container. Oh yeah, and run the parser ofc.
+*    dockerfile does not mount any (persistent) local volume (yet), you'll need that for the blockparser. Just modify the dockerfile or add it when starting the container
 
 
