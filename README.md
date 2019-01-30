@@ -2,6 +2,10 @@
 Docker file for citp/BlockSci
 Even though there is a ready AMI for AWS, you might already have access to some infrastructure already. 
 
+### IMPORTANT: 
+Ideally build on machine, where you will run the container. Else you may run into problems when running blocksci (e.g. illegal instruction).
+2nd option is to run the container and make/install blocksci inside of it.
+
 ### Instructions:
 *  Compiling needs lots of ressources, don't forget to assign your containers enough ressources (on windows)
 *  run with: 
