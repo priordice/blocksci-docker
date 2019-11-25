@@ -35,7 +35,9 @@ RUN git clone https://github.com/citp/BlockSci.git && \
 	make install
 
 WORKDIR /usr/local/src/BlockSci/blockscipy/
-CC=gcc-7 CXX=g++-7 pip install -e /usr/local/src/BlockSci/blockscipy
+ENV CC=gcc-7 
+ENV CXX=g++-7 
+RUN pip install -e /usr/local/src/BlockSci/blockscipy
 
 RUN fix-permissions $CONDA_DIR
 RUN fix-permissions /home/$NB_USER
