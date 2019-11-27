@@ -28,6 +28,9 @@ USER root
 WORKDIR /usr/local/src
 RUN git clone https://github.com/citp/BlockSci.git && \
     cd BlockSci && \
+    git checkout "v0.6" && \
+    git submodule init && \
+    git submodule update --recursive && \
     mkdir release && \
 	cd release && \
 	CC=gcc-7 CXX=g++-7 cmake -DCMAKE_BUILD_TYPE=Release .. && \
