@@ -28,6 +28,9 @@ USER root
 WORKDIR /usr/local/src
 RUN git clone https://github.com/citp/BlockSci.git && \
     cd BlockSci && \
+    git checkout "v0.6" && \
+    git submodule init && \
+    git submodule update --recursive && \
     mkdir release && \
 	cd release && \
 	CC=gcc-7 CXX=g++-7 cmake -DCMAKE_BUILD_TYPE=Release .. && \
@@ -35,7 +38,9 @@ RUN git clone https://github.com/citp/BlockSci.git && \
 	make install
 
 WORKDIR /usr/local/src/BlockSci/blockscipy/
-CC=gcc-7 CXX=g++-7 pip install -e /usr/local/src/BlockSci/blockscipy
+ENV CC=gcc-7 
+ENV CXX=g++-7 
+RUN pip install -e /usr/local/src/BlockSci/blockscipy
 
 RUN fix-permissions $CONDA_DIR
 RUN fix-permissions /home/$NB_USER
