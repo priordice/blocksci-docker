@@ -1,4 +1,4 @@
-FROM jupyter/scipy-notebook
+FROM jupyter/scipy-notebook:ubuntu-18.04
 
 USER root
 RUN apt-get -y update && \
@@ -35,10 +35,15 @@ RUN git clone https://github.com/citp/BlockSci.git && \
 	make install
 
 WORKDIR /usr/local/src/BlockSci/blockscipy/
-CC=gcc-7 CXX=g++-7 pip install -e /usr/local/src/BlockSci/blockscipy
+RUN CC=gcc-7 CXX=g++-7 pip install -e /usr/local/src/BlockSci/blockscipy
 
 RUN fix-permissions $CONDA_DIR
 RUN fix-permissions /home/$NB_USER
 
+RUN mkdir -p /mnt/data/parsed-data-bitcoin
+
 USER root
-CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
+WORKDIR /usr/local/src/BlockSci/Notebooks
+# To generate password for jupyter, execute in a python shell:
+# from notebook.auth import passwd; passwd()
+CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root", "--NotebookApp.token=''","--NotebookApp.password='NOTEBOOK_PASSWORD'"]
